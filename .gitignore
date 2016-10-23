@@ -1,0 +1,15 @@
+bin/*
+
+# Common
+*.bak
+*.tmp
+*.log
+*.old
+.settings
+.buildpath
+.project
+.externalToolBuilders
+
+# Composer
+vendor/
+composer.lock
