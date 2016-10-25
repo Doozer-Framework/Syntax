@@ -385,7 +385,7 @@ trait SyntaxAwareTrait
      *
      * @return string Compiled source code.
      *
-     * throws Doozer_Syntax_Exception_PreprocessorException|Doozer_Syntax_Exception_CompilerException|Doozer_Syntax_Exception_ResolvePlaceholderException
+     * throws PreprocessorException|CompilerException|ResolvePlaceholderException
      */
     protected function compile($sourceCode)
     {
@@ -407,7 +407,7 @@ trait SyntaxAwareTrait
      *
      * @return string Processed result
      *
-     * @throws Doozer_Syntax_Exception_SyntaxException|Doozer_Syntax_Exception_PreprocessorException
+     * @throws SyntaxException|PreprocessorException
      */
     protected function preProcess($sourceCode)
     {
@@ -420,7 +420,7 @@ trait SyntaxAwareTrait
             $argument  = $directives[2][$i];
 
             if (true !== $this->hasDirective($directive)) {
-                throw new Doozer_Syntax_Exception_SyntaxException(
+                throw new SyntaxException(
                     sprintf('Syntax error. Directive "%s" is invalid and could not be processed.', $directive)
                 );
             }
@@ -431,8 +431,8 @@ trait SyntaxAwareTrait
                     $this->execute($directive, $argument),
                     $sourceCode
                 );
-            } catch (Doozer_Exception_GenericException $exception) {
-                throw new Doozer_Syntax_Exception_PreprocessorException(
+            } catch (\RuntimeException $exception) {
+                throw new PreprocessorException(
                     sprintf('Error processing directive "%s".', $syntax),
                     null,
                     $exception
@@ -454,7 +454,7 @@ trait SyntaxAwareTrait
      *
      * @return string Post processed source code.
      *
-     * @throws Doozer_Syntax_Exception_SyntaxException|Doozer_Syntax_Exception_PreprocessorException
+     * @throws SyntaxException|PreprocessorException
      */
     protected function postProcess($sourceCode)
     {
@@ -467,7 +467,7 @@ trait SyntaxAwareTrait
             $argument = $functions[2][$i];
 
             if (true !== $this->hasFunction($function)) {
-                throw new Doozer_Syntax_Exception_SyntaxException(
+                throw new SyntaxException(
                     sprintf('Syntax error. Function "%s" is invalid and could not be processed.', $function)
                 );
             }
@@ -475,7 +475,7 @@ trait SyntaxAwareTrait
             try {
                 $result = $this->execute($function, $argument);
 
-                if ('string' === gettype($result)) {
+                if (true === is_string($result)) {
                     $marker = '%s';
                 } else {
                     $marker = '"%s"';
@@ -487,8 +487,8 @@ trait SyntaxAwareTrait
                     $result,
                     $sourceCode
                 );
-            } catch (Doozer_Exception_GenericException $exception) {
-                throw new Doozer_Syntax_Exception_PreprocessorException(
+            } catch (\RuntimeException $exception) {
+                throw new PreprocessorException(
                     sprintf('Error processing function "%s".', $syntax),
                     null,
                     $exception
@@ -521,7 +521,7 @@ trait SyntaxAwareTrait
      *
      * @return string Compiled buffer
      *
-     * @throws Doozer_Syntax_Exception_CompilerException|Doozer_Syntax_Exception_ResolvePlaceholderException
+     * @throws CompilerException|ResolvePlaceholderException
      */
     protected function resolve($buffer)
     {
@@ -553,13 +553,13 @@ trait SyntaxAwareTrait
      *
      * @return string Buffer with replaced content.
      *
-     * @throws Doozer_Syntax_Exception_ResolvePlaceholderException
+     * @throws ResolvePlaceholderException
      */
     protected function resolvePlaceholder($buffer, array $placeholders, array $replacements)
     {
         foreach ($placeholders as $placeholder) {
             if (false === isset($replacements[$placeholder])) {
-                throw new Doozer_Syntax_Exception_ResolvePlaceholderException(
+                throw new ResolvePlaceholderException(
                     sprintf('Compiler error for placeholder "%s". Value not found!', $placeholder)
                 );
             }
@@ -578,7 +578,7 @@ trait SyntaxAwareTrait
      *
      * @return string Result of operation
      *
-     * @throws Doozer_Syntax_Exception_ExecutionFailedException|Doozer_Syntax_Exception_ExecutionResultException
+     * @throws ExecutionFailedException|ExecutionResultException
      */
     protected function __php($code)
     {
@@ -587,7 +587,7 @@ trait SyntaxAwareTrait
         $code = @eval($code);
 
         if (false === $code) {
-            throw new Doozer_Syntax_Exception_ExecutionFailedException(
+            throw new ExecutionFailedException(
                 sprintf('Executing PHP code "%s" failed.', $code)
             );
         }
@@ -596,7 +596,7 @@ trait SyntaxAwareTrait
         $result = $code();
 
         if (false === is_string($result) && false === $result instanceof \stdClass) {
-            throw new Doozer_Syntax_Exception_ExecutionResultException(
+            throw new ExecutionResultException(
                 sprintf(
                     'Executed PHP code must return a string or value \stdClass but returned "%s" instead.',
                     gettype($result)

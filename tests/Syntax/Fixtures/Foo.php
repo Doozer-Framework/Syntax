@@ -1,15 +1,16 @@
 <?php
 
-namespace Doozer\Syntax\Exception;
+namespace Doozer\Syntax\Tests\Fixtures;
 
 /**
- * Doozer - Syntax - Exception - PreprocessorException.
+ * Doozer - Syntax - Tests - Fixtures - Foo.
  *
- * PreprocessorException.php - Thrown if preprocessor is not able to pre process an expression.
+ * Foo.php - Fixture implementing trait for Unit-Tests.
  *
  * PHP versions 5.6
  *
  * LICENSE:
+ *
  * The MIT License (MIT)
  *
  * Copyright (c) 2005 - 2016, Benjamin Carl - All rights reserved.
@@ -31,7 +32,7 @@ namespace Doozer\Syntax\Exception;
  *
  * Please feel free to contact us via e-mail: opensource@clickalicious.de
  *
- * @category  Doozer
+ * @category  Doozer-Framework
  *
  * @author    Benjamin Carl <opensource@clickalicious.de>
  * @copyright 2005 - 2016 Benjamin Carl
@@ -41,13 +42,42 @@ namespace Doozer\Syntax\Exception;
  *
  * @link      https://github.com/Doozer-Framework/Syntax
  */
+use Doozer\Syntax\SyntaxAwareTrait;
 
 /**
- * Doozer - Syntax - Exception - PreprocessorException.
+ * Class Foo.
  *
- * Thrown if preprocessor is not able to pre process an expression.
+ * @author  Benjamin Carl <opensource@clickalicious.de>
  */
-class Doozer_Syntax_Exception_PreprocessorException extends \RuntimeException
+class Foo
 {
-    // Intentionally left empty.
+    use SyntaxAwareTrait;
+
+    /**
+     * Implementation of __include.
+     *
+     * @param mixed $identifier Identifier for include.
+     *
+     * @author  Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @return mixed Result
+     */
+    protected function __include($identifier)
+    {
+        return true;
+    }
+
+    /**
+     * Implementation of __require.
+     *
+     * @param mixed $identifier Identifier for require.
+     *
+     * @author  Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @return mixed Result
+     */
+    protected function __require($identifier)
+    {
+        return true;
+    }
 }

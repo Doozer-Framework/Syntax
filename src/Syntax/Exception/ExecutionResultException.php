@@ -5,13 +5,12 @@ namespace Doozer\Syntax\Exception;
 /**
  * Doozer - Syntax - Exception - ExecutionResultException.
  *
- * ExecutionResultException.php - ExecutionResultException.
+ * ExecutionResultException.php - Thrown if returned type of an executed expression is neither string nor object
+ * (\stdClass).
  *
  * PHP versions 5.6
  *
  * LICENSE:
- * Doozer - The lightweight PHP-Framework for high-performance websites
- *
  * The MIT License (MIT)
  *
  * Copyright (c) 2005 - 2016, Benjamin Carl - All rights reserved.
@@ -43,22 +42,13 @@ namespace Doozer\Syntax\Exception;
  *
  * @link      https://github.com/Doozer-Framework/Syntax
  */
-require_once DOOZR_PATH_SRC.'Doozer/Exception/GenericException.php';
 
 /**
  * Doozer - Syntax - Exception - ExecutionResultException.
  *
- * ExecutionResultException.
- *
- * @category  Doozer
- *
- * @author    Benjamin Carl <opensource@clickalicious.de>
- * @copyright 2005 - 2016 Benjamin Carl
- * @license   https://opensource.org/licenses/MIT The MIT License
- *
- * @link      https://github.com/Doozer-Framework/Syntax
+ * Thrown if returned type of an executed expression is neither string nor object (\stdClass).
  */
-class Doozer_Syntax_Exception_ExecutionResultException extends Doozer_Exception_GenericException
+class Doozer_Syntax_Exception_ExecutionResultException extends \RuntimeException
 {
     // Intentionally left empty.
 }
