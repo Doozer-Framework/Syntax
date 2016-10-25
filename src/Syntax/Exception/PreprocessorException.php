@@ -47,7 +47,7 @@ namespace Doozer\Syntax\Exception;
  *
  * Thrown if preprocessor is not able to pre process an expression.
  */
-class Doozer_Syntax_Exception_PreprocessorException extends \RuntimeException
+class PreprocessorException extends \RuntimeException
 {
     // Intentionally left empty.
 }

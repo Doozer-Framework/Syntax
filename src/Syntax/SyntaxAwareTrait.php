@@ -5,7 +5,7 @@ namespace Doozer\Syntax;
 /**
  * Doozer - Syntax - SyntaxAwareTrait.
  *
- * SyntaxAwareTrait.php - Trait for syntax preprocessor and compiler support.
+ * SyntaxAwareTrait.php - Syntax trait enriching classes with parser, interpreter and compiler for expression support.
  *
  * PHP versions 5.6
  *

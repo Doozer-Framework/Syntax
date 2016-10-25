@@ -47,7 +47,7 @@ namespace Doozer\Syntax\Exception;
  *
  * Syntax exception.
  */
-class Doozer_Syntax_Exception_SyntaxException extends \RuntimeException
+class SyntaxException extends \RuntimeException
 {
     // Intentionally left empty.
 }

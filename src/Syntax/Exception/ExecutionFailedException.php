@@ -47,7 +47,7 @@ namespace Doozer\Syntax\Exception;
  *
  * Thrown when the execution of an expression fails for some reason.
  */
-class Doozer_Syntax_Exception_ExecutionFailedException extends \RuntimeException
+class ExecutionFailedException extends \RuntimeException
 {
     // Intentionally left empty.
 }

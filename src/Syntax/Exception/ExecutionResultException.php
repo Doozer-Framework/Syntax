@@ -48,7 +48,7 @@ namespace Doozer\Syntax\Exception;
  *
  * Thrown if returned type of an executed expression is neither string nor object (\stdClass).
  */
-class Doozer_Syntax_Exception_ExecutionResultException extends \RuntimeException
+class ExecutionResultException extends \RuntimeException
 {
     // Intentionally left empty.
 }

@@ -55,7 +55,7 @@ namespace Doozer\Syntax\Exception;
  *
  * @link      https://github.com/Doozer-Framework/Syntax
  */
-class Doozer_Syntax_Exception_CompilerException extends \RuntimeException
+class CompilerException extends \RuntimeException
 {
     // Intentionally left empty.
 }

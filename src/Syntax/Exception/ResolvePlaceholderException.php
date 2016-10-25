@@ -47,7 +47,7 @@ namespace Doozer\Syntax\Exception;
  *
  * Thrown if a placeholder can not be resolved.
  */
-class Doozer_Syntax_Exception_ResolvePlaceholderException extends \RuntimeException
+class ResolvePlaceholderException extends \RuntimeException
 {
     // Intentionally left empty.
 }
