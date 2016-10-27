@@ -1,5 +1,5 @@
 {
-  "name": "doozr-framework/syntax",
+  "name": "doozer-framework/syntax",
   "license": "MIT",
   "description": " Syntax trait enriching classes with parser, interpreter and compiler.",
   "type": "library",
@@ -44,7 +44,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Doozer\\Tests\\": "tests/Syntax/"
+      "Doozer\\Syntax\\Tests\\": "tests/Syntax/"
     }
   },
   "config": {
