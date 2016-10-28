@@ -5,7 +5,7 @@ php:
   - 7.0
   - hhvm
 
-matrix:W
+matrix:
   allow_failures:
     - php: hhvm
   fast_finish: true

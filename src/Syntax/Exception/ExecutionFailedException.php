@@ -10,6 +10,7 @@ namespace Doozer\Syntax\Exception;
  * PHP versions 5.6
  *
  * LICENSE:
+ *
  * The MIT License (MIT)
  *
  * Copyright (c) 2005 - 2016, Benjamin Carl - All rights reserved.
@@ -41,13 +42,15 @@ namespace Doozer\Syntax\Exception;
  *
  * @link      https://github.com/Doozer-Framework/Syntax
  */
+use Doozer\Exception\AbstractLogicException;
 
 /**
- * Doozer - Syntax - Exception - ExecutionFailedException.
- *
+ * ExecutionFailedException
  * Thrown when the execution of an expression fails for some reason.
+ *
+ * @author Benjamin Carl <opensource@clickalicious.de>
  */
-class ExecutionFailedException extends \RuntimeException
+class ExecutionFailedException extends AbstractLogicException
 {
     // Intentionally left empty.
 }

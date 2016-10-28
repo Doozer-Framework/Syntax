@@ -11,6 +11,7 @@ namespace Doozer\Syntax\Exception;
  * PHP versions 5.6
  *
  * LICENSE:
+ *
  * The MIT License (MIT)
  *
  * Copyright (c) 2005 - 2016, Benjamin Carl - All rights reserved.
@@ -42,13 +43,15 @@ namespace Doozer\Syntax\Exception;
  *
  * @link      https://github.com/Doozer-Framework/Syntax
  */
+use Doozer\Exception\AbstractRuntimeException;
 
 /**
- * Doozer - Syntax - Exception - ExecutionResultException.
- *
+ * ExecutionResultException
  * Thrown if returned type of an executed expression is neither string nor object (\stdClass).
+ *
+ * @author Benjamin Carl <opensource@clickalicious.de>
  */
-class ExecutionResultException extends \RuntimeException
+class ExecutionResultException extends AbstractRuntimeException
 {
     // Intentionally left empty.
 }

@@ -12,7 +12,7 @@
 >
   <testsuites>
     <testsuite name="Doozer-Framework\Syntax Test Suite">
-      <directory suffix="Test.php">./Tests</directory>
+      <directory suffix="Test.php">./tests</directory>
     </testsuite>
   </testsuites>
 

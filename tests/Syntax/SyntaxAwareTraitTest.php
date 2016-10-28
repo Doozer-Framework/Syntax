@@ -45,30 +45,105 @@ namespace Doozer\Syntax\Tests;
 use Doozer\Syntax\Tests\Fixtures\Foo;
 
 /**
- * Class SyntaxAwareTraitTest.
+ * SyntaxAwareTraitTest
  *
  * @author Benjamin Carl <opensource@clickalicious.de>
  */
 class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * Test subject implementing Syntax trait.
+     *
+     * @var \Doozer\Syntax\Tests\Fixtures\Foo
+     */
     protected static $fixtureInstance;
 
-    public function testFoo()
-    {
-        $foo = new Foo();
-        dump($foo);
-        die;
+    /**
+     * Variables for testing compiler.
+     *
+     * @var array
+     */
+    protected static $variableSet;
 
-        #static::assertTrue(true);
-    }
+    /**
+     * Constants for testing compiler.
+     *
+     * @var array
+     */
+    protected static $constantSet;
 
+    /**
+     * Buffer/string for testing compiler.
+     *
+     * @var string
+     */
+    protected static $buffer;
+
+    /**
+     * @inheritdoc
+     */
     protected function setUp()
     {
-        #static::$fixtureInstance = new \Doozer\Syntax\Tests\Fixtures\Foo();
+        static::$variableSet = [
+            'foo' => 'bar',
+            'bar' => 'baz',
+            'baz' => 123,
+        ];
+
+        static::$constantSet = [
+            'FOO' => 'BAR',
+            'BAR' => 'BAZ',
+            'BAZ' => 456
+        ];
+
+        $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Success'.DIRECTORY_SEPARATOR;
+        $includeFile = 'foo.json';
+
+        //{{foo}}{{FOO}}{{bar}}{{BAR}}{{baz}}{{BAZ}}
+        static::$buffer = sprintf('{{include(%s)}}', $includeFile);
+
+        $defaultContent = '{}';
+
+        static::$fixtureInstance = new Foo($basePath, $defaultContent, static::$constantSet, static::$variableSet);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function tearDown()
     {
-        #static::$fixtureInstance = null;
+        static::$fixtureInstance = null;
     }
+
+    public function testInstance()
+    {
+        static::assertInstanceOf('\Doozer\Syntax\Tests\Fixtures\Foo', static::$fixtureInstance);
+    }
+
+    public function testCompilingBuffer()
+    {
+        static::assertSame(static::$fixtureInstance->getCompileResult(static::$buffer), 'barBARbazBAZ123456');
+    }
+
+    /*
+    public function testSettingVariables()
+    {
+        static::$fixtureInstance->setVariables(
+            static::$variableSet
+        );
+
+        self::assertSame(static::$fixtureInstance->getVariables(), static::$variableSet);
+    }
+    */
+
+    /*
+    public function testSettingConstants()
+    {
+        static::$fixtureInstance->setConstants(
+            static::$constantSet
+        );
+
+        self::assertSame(static::$fixtureInstance->getConstants(), static::$constantSet);
+    }
+    */
 }

@@ -10,6 +10,7 @@ namespace Doozer\Syntax\Exception;
  * PHP versions 5.6
  *
  * LICENSE:
+ *
  * The MIT License (MIT)
  *
  * Copyright (c) 2005 - 2016, Benjamin Carl - All rights reserved.
@@ -43,9 +44,10 @@ namespace Doozer\Syntax\Exception;
  */
 
 /**
- * Doozer - Syntax - Exception - ResolvePlaceholderException.
- *
+ * ResolvePlaceholderException
  * Thrown if a placeholder can not be resolved.
+ *
+ * @author Benjamin Carl <opensource@clickalicious.de>
  */
 class ResolvePlaceholderException extends \RuntimeException
 {

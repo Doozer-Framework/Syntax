@@ -1,5 +1,3 @@
-bin/*
-
 # Common
 *.bak
 *.tmp
@@ -13,3 +11,4 @@ bin/*
 # Composer
 vendor/
 composer.lock
+bin/

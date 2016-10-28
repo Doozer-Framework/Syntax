@@ -42,11 +42,21 @@ namespace Doozer\Syntax;
  *
  * @link      https://github.com/Doozer-Framework/Syntax
  */
+use Doozer\Syntax\Exception\CompilerException;
+use Doozer\Syntax\Exception\ExecutionFailedException;
+use Doozer\Syntax\Exception\ExecutionResultException;
+use Doozer\Syntax\Exception\FileNotFoundException;
+use Doozer\Syntax\Exception\IncludeFailedException;
+use Doozer\Syntax\Exception\PreprocessorException;
+use Doozer\Syntax\Exception\RequireFailedException;
+use Doozer\Syntax\Exception\ResolvePlaceholderException;
+use Doozer\Syntax\Exception\SyntaxException;
 
 /**
- * Doozer - Syntax - Trait - SyntaxAwareTrait.
+ * SyntaxAwareTrait
+ * Syntax trait enriching classes with parser, interpreter and compiler for expression support.
  *
- * Trait for syntax preprocessor and compiler support.
+ * @author Benjamin Carl <opensource@clickalicious.de>
  */
 trait SyntaxAwareTrait
 {
@@ -93,6 +103,20 @@ trait SyntaxAwareTrait
      * @var array
      */
     protected $variables = [];
+
+    /**
+     * Base path for included or required files.
+     *
+     * @var string
+     */
+    protected $basePath = '';
+
+    /**
+     * Default content returned on failed include.
+     *
+     * @var string
+     */
+    protected $defaultContent = '';
 
     /**
      * Returns the constraint for a passed function.
@@ -258,7 +282,7 @@ trait SyntaxAwareTrait
      */
     protected function extractDirectives($buffer)
     {
-        $pattern = '/\{{2}([a-z]+)\({1}([A-Za-z0-9_\-\.]+)\){1}\}{2}/u';
+        $pattern = '/\{{2}([a-z]+)\({1}([A-Za-z0-9_\-\.\/]+)\){1}\}{2}/u';
         preg_match_all($pattern, $buffer, $result);
 
         return $result;
@@ -379,19 +403,108 @@ trait SyntaxAwareTrait
     }
 
     /**
+     * Setter for basePath.
+     *
+     * @param string $basePath BasePath to set.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     */
+    protected function setBasePath($basePath)
+    {
+        $this->basePath = $basePath;
+    }
+
+    /**
+     * Fluent: Setter for basePath.
+     *
+     * @param string $basePath BasePath to set.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @return $this Instance for chaining
+     */
+    protected function basePath($basePath)
+    {
+        $this->setBasePath($basePath);
+
+        return $this;
+    }
+
+    /**
+     * Getter for basePath.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @return string The basePath
+     */
+    protected function getBasePath()
+    {
+        return $this->basePath;
+    }
+
+    /**
+     * Setter for defaultContent.
+     *
+     * @param string $defaultContent DefaultContent to set.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     */
+    protected function setDefaultContent($defaultContent)
+    {
+        $this->defaultContent = $defaultContent;
+    }
+
+    /**
+     * Fluent: Setter for defaultContent.
+     *
+     * @param string $defaultContent DefaultContent to set.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @return $this Instance for chaining
+     */
+    protected function defaultContent($defaultContent)
+    {
+        $this->setDefaultContent($defaultContent);
+
+        return $this;
+    }
+
+    /**
+     * Getter for defaultContent.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @return string The defaultContent
+     */
+    protected function getDefaultContent()
+    {
+        return $this->defaultContent;
+    }
+
+    /**
      * Combines the whole stack of calls required to compile any kind of Doozer syntax.
      *
      * @param string $sourceCode Source code to compile
      *
      * @return string Compiled source code.
      *
-     * throws PreprocessorException|CompilerException|ResolvePlaceholderException
+     * @throws CompilerException
      */
     protected function compile($sourceCode)
     {
-        $sourceCode = $this->preProcess($sourceCode);
-        $sourceCode = $this->resolve($sourceCode);
-        $sourceCode = $this->postProcess($sourceCode);
+        try {
+            $sourceCode = $this->preProcess($sourceCode);
+            $sourceCode = $this->resolve($sourceCode);
+            $sourceCode = $this->postProcess($sourceCode);
+
+        } catch (\Exception $exception) {
+            throw new CompilerException(
+                'Compile failed for some reason.',
+                null,
+                $exception
+            );
+        }
 
         return $sourceCode;
     }
@@ -407,7 +520,8 @@ trait SyntaxAwareTrait
      *
      * @return string Processed result
      *
-     * @throws SyntaxException|PreprocessorException
+     * @throws SyntaxException
+     * @throws PreprocessorException
      */
     protected function preProcess($sourceCode)
     {
@@ -431,7 +545,8 @@ trait SyntaxAwareTrait
                     $this->execute($directive, $argument),
                     $sourceCode
                 );
-            } catch (\RuntimeException $exception) {
+
+            } catch (\Exception $exception) {
                 throw new PreprocessorException(
                     sprintf('Error processing directive "%s".', $syntax),
                     null,
@@ -454,7 +569,8 @@ trait SyntaxAwareTrait
      *
      * @return string Post processed source code.
      *
-     * @throws SyntaxException|PreprocessorException
+     * @throws SyntaxException
+     * @throws PreprocessorException
      */
     protected function postProcess($sourceCode)
     {
@@ -487,7 +603,7 @@ trait SyntaxAwareTrait
                     $result,
                     $sourceCode
                 );
-            } catch (\RuntimeException $exception) {
+            } catch (\Exception $exception) {
                 throw new PreprocessorException(
                     sprintf('Error processing function "%s".', $syntax),
                     null,
@@ -500,12 +616,17 @@ trait SyntaxAwareTrait
     }
 
     /**
-     * Executes a function call.
+     * Executes a directive like "require" or "include".
      *
-     * @param $directive
-     * @param $argument
+     * @param string $directive Directive to execute.
+     * @param string $argument  Arguments to pass to execution.
      *
      * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @return mixed Result of execution
+     *
+     * @throws RequireFailedException
+     * @throws IncludeFailedException
      */
     protected function execute($directive, $argument)
     {
@@ -521,7 +642,7 @@ trait SyntaxAwareTrait
      *
      * @return string Compiled buffer
      *
-     * @throws CompilerException|ResolvePlaceholderException
+     * @throws ResolvePlaceholderException
      */
     protected function resolve($buffer)
     {
@@ -560,7 +681,7 @@ trait SyntaxAwareTrait
         foreach ($placeholders as $placeholder) {
             if (false === isset($replacements[$placeholder])) {
                 throw new ResolvePlaceholderException(
-                    sprintf('Compiler error for placeholder "%s". Value not found!', $placeholder)
+                    sprintf('Placeholder "%s" can not be resolved. Value not found!', $placeholder)
                 );
             }
             $buffer = str_replace('{{'.$placeholder.'}}', $replacements[$placeholder], $buffer);
@@ -572,13 +693,14 @@ trait SyntaxAwareTrait
     /**
      * Implementation of __php.
      *
-     * @param string $code Code to be executed
+     * @param string $code Code to be executed.
      *
      * @author Benjamin Carl <opensource@clickalicious.de>
      *
      * @return string Result of operation
      *
-     * @throws ExecutionFailedException|ExecutionResultException
+     * @throws ExecutionFailedException
+     * @throws ExecutionResultException
      */
     protected function __php($code)
     {
@@ -607,25 +729,91 @@ trait SyntaxAwareTrait
         return $result;
     }
 
-    /*------------------------------------------------------------------------------------------------------------------
-    | BLUEPRINT
-    +-----------------------------------------------------------------------------------------------------------------*/
-
     /**
-     * Implementation of __include.
+     * Includes a resource.
      *
-     * @param mixed $identifier Identifier for include.
+     * @param mixed $identifier Identifier for resource to include.
      *
-     * @return mixed Result
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @return mixed Result of inclusion.
+     *
+     * @throws IncludeFailedException On any exceptional behavior.
      */
-    abstract protected function __include($identifier);
+    protected function __include($identifier)
+    {
+        $resource = realpath($this->getBasePath().$identifier);
+        $content  = $this->getDefaultContent();
+
+        if (false !== $resource) {
+            try {
+                $sourceCode = $this->readResource($resource);
+                $content    = $this->preProcess($sourceCode);
+
+            } catch (FileNotFoundException $exception) {
+                // Intentionally left empty.
+
+            } catch (\Exception $exception) {
+                throw new IncludeFailedException(
+                    'Error processing include "%s".',
+                    null,
+                    $exception
+                );
+            }
+        }
+
+        return $content;
+    }
 
     /**
-     * Implementation of __require.
+     * Requires a resource and return its content.
      *
      * @param mixed $identifier Identifier for require.
      *
-     * @return mixed Result
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @return mixed Result of inclusion.
+     *
+     * @throws RequireFailedException On any exceptional behavior.
      */
-    abstract protected function __require($identifier);
+    protected function __require($identifier)
+    {
+        $resource = realpath($this->getBasePath().$identifier);
+
+        try {
+            $sourceCode = $this->readResource($resource);
+            $content    = $this->preProcess($sourceCode);
+
+        } catch (\Exception $exception) {
+            throw new RequireFailedException(
+                'Error requiring resource "%s".',
+                null,
+                $exception
+            );
+        }
+
+        return $content;
+    }
+
+    /**
+     * Reads given resource from filesystem and returns content as string.
+     *
+     * @param string $resource Resource to read int string.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @return string Content of resource
+     *
+     * @throws FileNotFoundException If a file could not be found
+     */
+    protected function readResource($resource)
+    {
+        if (true !== file_exists($resource)) {
+            throw new FileNotFoundException(
+                'File "%s" can not be found.'
+            );
+        }
+
+        return file_get_contents($resource);
+    }
 }

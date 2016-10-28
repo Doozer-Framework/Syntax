@@ -5,11 +5,12 @@ namespace Doozer\Syntax\Exception;
 /**
  * Doozer - Syntax - Exception - CompilerException.
  *
- * CompilerException.php - Thrown on any exceptional behavior while compiling..
+ * CompilerException.php - Exception thrown on any exceptional behavior while compiling..
  *
  * PHP versions 5.6
  *
  * LICENSE:
+ *
  * The MIT License (MIT)
  *
  * Copyright (c) 2005 - 2016, Benjamin Carl - All rights reserved.
@@ -41,21 +42,15 @@ namespace Doozer\Syntax\Exception;
  *
  * @link      https://github.com/Doozer-Framework/Syntax
  */
+use Doozer\Exception\AbstractRuntimeException;
 
 /**
- * Doozer - Syntax - Exception - CompilerException.
+ * CompilerException
+ * Exception thrown on any exceptional behavior while compiling.
  *
- * Thrown on any exceptional behavior while compiling.
- *
- * @category  Doozer
- *
- * @author    Benjamin Carl <opensource@clickalicious.de>
- * @copyright 2005 - 2016 Benjamin Carl
- * @license   https://opensource.org/licenses/MIT The MIT License
- *
- * @link      https://github.com/Doozer-Framework/Syntax
+ * @author Benjamin Carl <opensource@clickalicious.de>
  */
-class CompilerException extends \RuntimeException
+class CompilerException extends AbstractRuntimeException
 {
     // Intentionally left empty.
 }

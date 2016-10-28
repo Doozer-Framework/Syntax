@@ -45,8 +45,7 @@ namespace Doozer\Syntax\Tests\Fixtures;
 use Doozer\Syntax\SyntaxAwareTrait;
 
 /**
- * Class Foo.
- *
+ * Foo
  * @author  Benjamin Carl <opensource@clickalicious.de>
  */
 class Foo
@@ -54,30 +53,23 @@ class Foo
     use SyntaxAwareTrait;
 
     /**
-     * Implementation of __include.
+     * Foo constructor.
      *
-     * @param mixed $identifier Identifier for include.
-     *
-     * @author  Benjamin Carl <opensource@clickalicious.de>
-     *
-     * @return mixed Result
+     * @param       $basePath
+     * @param array $constants
+     * @param array $variables
      */
-    protected function __include($identifier)
+    public function __construct($basePath, $defaultContent, array $constants = [], array $variables = [])
     {
-        return true;
+        $this
+            ->basePath($basePath)
+            ->defaultContent($defaultContent)
+            ->constants($constants)
+            ->variables($variables);
     }
 
-    /**
-     * Implementation of __require.
-     *
-     * @param mixed $identifier Identifier for require.
-     *
-     * @author  Benjamin Carl <opensource@clickalicious.de>
-     *
-     * @return mixed Result
-     */
-    protected function __require($identifier)
+    public function getCompileResult($sourceCode)
     {
-        return true;
+        return $this->compile($sourceCode);
     }
 }

@@ -3,9 +3,9 @@
 namespace Doozer\Syntax\Exception;
 
 /**
- * Doozer - Syntax - Exception - SyntaxException.
+ * Doozer - Syntax - Exception - FileNotFoundException.
  *
- * SyntaxException.php - Thrown if an expression contains unknown syntax.
+ * FileNotFoundException.php - Thrown if an include or require file can not be found.
  *
  * PHP versions 5.6
  *
@@ -42,14 +42,15 @@ namespace Doozer\Syntax\Exception;
  *
  * @link      https://github.com/Doozer-Framework/Syntax
  */
+use Doozer\Exception\AbstractRuntimeException;
 
 /**
- * SyntaxException
- * Thrown if an expression contains unknown syntax.
+ * FileNotFoundException
+ * Thrown if an include or require file can not be found.
  *
  * @author Benjamin Carl <opensource@clickalicious.de>
  */
-class SyntaxException extends \RuntimeException
+class FileNotFoundException extends AbstractRuntimeException
 {
     // Intentionally left empty.
 }

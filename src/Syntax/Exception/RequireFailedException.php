@@ -3,9 +3,9 @@
 namespace Doozer\Syntax\Exception;
 
 /**
- * Doozer - Syntax - Exception - SyntaxException.
+ * Doozer - Syntax - Exception - RequireFailedException.
  *
- * SyntaxException.php - Thrown if an expression contains unknown syntax.
+ * RequireFailedException.php - Thrown if the require directive fails.
  *
  * PHP versions 5.6
  *
@@ -42,14 +42,15 @@ namespace Doozer\Syntax\Exception;
  *
  * @link      https://github.com/Doozer-Framework/Syntax
  */
+use Doozer\Exception\AbstractRuntimeException;
 
 /**
- * SyntaxException
- * Thrown if an expression contains unknown syntax.
+ * RequireFailedException
+ * Thrown if the require directive fails.
  *
  * @author Benjamin Carl <opensource@clickalicious.de>
  */
-class SyntaxException extends \RuntimeException
+class RequireFailedException extends AbstractRuntimeException
 {
     // Intentionally left empty.
 }

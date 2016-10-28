@@ -10,6 +10,7 @@ namespace Doozer\Syntax\Exception;
  * PHP versions 5.6
  *
  * LICENSE:
+ *
  * The MIT License (MIT)
  *
  * Copyright (c) 2005 - 2016, Benjamin Carl - All rights reserved.
@@ -41,13 +42,15 @@ namespace Doozer\Syntax\Exception;
  *
  * @link      https://github.com/Doozer-Framework/Syntax
  */
+use Doozer\Exception\AbstractRuntimeException;
 
 /**
- * Doozer - Syntax - Exception - PreprocessorException.
- *
+ * PreprocessorException
  * Thrown if preprocessor is not able to pre process an expression.
+ *
+ * @author Benjamin Carl <opensource@clickalicious.de>
  */
-class PreprocessorException extends \RuntimeException
+class PreprocessorException extends AbstractRuntimeException
 {
     // Intentionally left empty.
 }
