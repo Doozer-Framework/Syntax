@@ -8,6 +8,9 @@
 .project
 .externalToolBuilders
 
+# PHPUnit
+docs/coverage
+
 # Composer
 vendor/
 composer.lock

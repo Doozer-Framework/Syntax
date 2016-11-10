@@ -80,6 +80,13 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
     protected static $buffer;
 
     /**
+     *
+     * @var string
+     */
+    protected static $expectedResult;
+
+
+    /**
      * @inheritdoc
      */
     protected function setUp()
@@ -95,16 +102,6 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
             'BAR' => 'BAZ',
             'BAZ' => 456
         ];
-
-        $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Success'.DIRECTORY_SEPARATOR;
-        $includeFile = 'foo.json';
-
-        //{{foo}}{{FOO}}{{bar}}{{BAR}}{{baz}}{{BAZ}}
-        static::$buffer = sprintf('{{include(%s)}}', $includeFile);
-
-        $defaultContent = '{}';
-
-        static::$fixtureInstance = new Foo($basePath, $defaultContent, static::$constantSet, static::$variableSet);
     }
 
     /**
@@ -113,37 +110,91 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         static::$fixtureInstance = null;
+        static::$expectedResult  = null;
+        static::$buffer          = null;
     }
 
     public function testInstance()
     {
+        $basePath = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Success'.DIRECTORY_SEPARATOR;
+        static::$fixtureInstance = new Foo($basePath, static::$variableSet, static::$constantSet);
         static::assertInstanceOf('\Doozer\Syntax\Tests\Fixtures\Foo', static::$fixtureInstance);
     }
 
-    public function testCompilingBuffer()
+    public function testCompileSuccessful()
     {
-        static::assertSame(static::$fixtureInstance->getCompileResult(static::$buffer), 'barBARbazBAZ123456');
-    }
+        $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Success'.DIRECTORY_SEPARATOR;
+        $includeFile = 'foo.txt';
+        static::$buffer = sprintf('{{require(%s)}}', $includeFile);
+        static::$expectedResult = "ALOHA\nBAR\n456\nbar\n123\nBAZ\nbaz";
+        static::$fixtureInstance = new Foo($basePath, static::$variableSet, static::$constantSet);
 
-    /*
-    public function testSettingVariables()
-    {
-        static::$fixtureInstance->setVariables(
-            static::$variableSet
+        static::assertSame(
+            static::$fixtureInstance->getCompiledResult(static::$buffer),
+            static::$expectedResult
         );
-
-        self::assertSame(static::$fixtureInstance->getVariables(), static::$variableSet);
     }
-    */
 
-    /*
-    public function testSettingConstants()
+    /**
+     * testCompileFailurePassingMissingRequiredFile.
+     *
+     * @expectedException \Doozer\Syntax\Exception\CompilerException
+     */
+    public function testCompileFailurePassingMissingRequiredFile()
     {
-        static::$fixtureInstance->setConstants(
-            static::$constantSet
-        );
-
-        self::assertSame(static::$fixtureInstance->getConstants(), static::$constantSet);
+        $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
+        $includeFile = 'passing-missing-required-file.txt';
+        static::$buffer = sprintf('{{include(%s)}}', $includeFile);
+        static::$fixtureInstance = new Foo($basePath, static::$variableSet, static::$constantSet);
+        static::$fixtureInstance->getCompiledResult(static::$buffer);
     }
-    */
+
+    /**
+     * testCompileFailurePassingInvalidDirective.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @expectedException \Doozer\Syntax\Exception\CompilerException
+     */
+    public function testCompileFailurePassingInvalidDirective()
+    {
+        $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
+        $includeFile = 'passing-invalid-directive.txt';
+        static::$buffer = sprintf('{{include(%s)}}', $includeFile);
+        static::$fixtureInstance = new Foo($basePath, static::$variableSet, static::$constantSet);
+        static::$fixtureInstance->getCompiledResult(static::$buffer);
+    }
+
+
+    /**
+     * testCompileFailurePassingInvalidPhpCode.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @expectedException \Doozer\Syntax\Exception\CompilerException
+     */
+    public function testCompileFailurePassingInvalidPhpCode()
+    {
+        $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
+        $includeFile = 'passing-invalid-php-code.txt';
+        static::$buffer = sprintf('{{include(%s)}}', $includeFile);
+        static::$fixtureInstance = new Foo($basePath, static::$variableSet, static::$constantSet);
+        static::$fixtureInstance->getCompiledResult(static::$buffer);
+    }
+
+    /**
+     * testCompileFailurePassingMissingReplacement.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @expectedException \Doozer\Syntax\Exception\CompilerException
+     */
+    public function testCompileFailurePassingMissingReplacement()
+    {
+        $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
+        $includeFile = 'passing-missing-replacement.txt';
+        static::$buffer = sprintf('{{include(%s)}}', $includeFile);
+        static::$fixtureInstance = new Foo($basePath, static::$variableSet, static::$constantSet);
+        static::$fixtureInstance->getCompiledResult(static::$buffer);
+    }
 }

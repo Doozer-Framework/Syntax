@@ -50,25 +50,34 @@ use Doozer\Syntax\SyntaxAwareTrait;
  */
 class Foo
 {
+    // The trait we test
     use SyntaxAwareTrait;
 
     /**
-     * Foo constructor.
+     * Constructor.
      *
-     * @param       $basePath
-     * @param array $constants
-     * @param array $variables
+     * @param string $basePath  Base path used for relative includes and requires.
+     * @param array  $variables Variables being used for replacements.
+     * @param array  $constants Constants being used for replacements.
      */
-    public function __construct($basePath, $defaultContent, array $constants = [], array $variables = [])
+    public function __construct($basePath, array $variables = [], array $constants = [])
     {
         $this
             ->basePath($basePath)
-            ->defaultContent($defaultContent)
-            ->constants($constants)
-            ->variables($variables);
+            ->variables($variables)
+            ->constants($constants);
     }
 
-    public function getCompileResult($sourceCode)
+    /**
+     * Accessor with public visibility for result check in unit tests.
+     *
+     * @param string $sourceCode The source code to compile.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @return string Result of compiler run
+     */
+    public function getCompiledResult($sourceCode)
     {
         return $this->compile($sourceCode);
     }

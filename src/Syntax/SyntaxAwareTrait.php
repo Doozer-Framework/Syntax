@@ -44,9 +44,9 @@ namespace Doozer\Syntax;
  */
 use Doozer\Syntax\Exception\CompilerException;
 use Doozer\Syntax\Exception\ExecutionFailedException;
-use Doozer\Syntax\Exception\ExecutionResultException;
 use Doozer\Syntax\Exception\FileNotFoundException;
 use Doozer\Syntax\Exception\IncludeFailedException;
+use Doozer\Syntax\Exception\PostprocessorException;
 use Doozer\Syntax\Exception\PreprocessorException;
 use Doozer\Syntax\Exception\RequireFailedException;
 use Doozer\Syntax\Exception\ResolvePlaceholderException;
@@ -116,7 +116,17 @@ trait SyntaxAwareTrait
      *
      * @var string
      */
-    protected $defaultContent = '';
+    protected $contentDefault = '';
+
+    /**
+     * Content border marker.
+     *
+     * @example If we use this trait in JSON context we would set this marker to " (double qoute).
+     *          So JSON keeps valid and on compile we use the border marker when replacing content "{{...}}"
+     *
+     * @var string
+     */
+    protected $contentBorderMarker = '';
 
     /**
      * Returns the constraint for a passed function.
@@ -443,43 +453,83 @@ trait SyntaxAwareTrait
     }
 
     /**
-     * Setter for defaultContent.
+     * Setter for contentDefault.
      *
-     * @param string $defaultContent DefaultContent to set.
+     * @param string $contentDefault DefaultContent to set.
      *
      * @author Benjamin Carl <opensource@clickalicious.de>
      */
-    protected function setDefaultContent($defaultContent)
+    protected function setContentDefault($contentDefault)
     {
-        $this->defaultContent = $defaultContent;
+        $this->contentDefault = $contentDefault;
     }
 
     /**
-     * Fluent: Setter for defaultContent.
+     * Fluent: Setter for contentDefault.
      *
-     * @param string $defaultContent DefaultContent to set.
+     * @param string $contentDefault DefaultContent to set.
      *
      * @author Benjamin Carl <opensource@clickalicious.de>
      *
      * @return $this Instance for chaining
      */
-    protected function defaultContent($defaultContent)
+    protected function contentDefault($contentDefault)
     {
-        $this->setDefaultContent($defaultContent);
+        $this->setContentDefault($contentDefault);
 
         return $this;
     }
 
     /**
-     * Getter for defaultContent.
+     * Getter for contentDefault.
      *
      * @author Benjamin Carl <opensource@clickalicious.de>
      *
-     * @return string The defaultContent
+     * @return string The contentDefault
      */
-    protected function getDefaultContent()
+    protected function getContentDefault()
     {
-        return $this->defaultContent;
+        return $this->contentDefault;
+    }
+
+    /**
+     * Setter for contentBorderMarker.
+     *
+     * @param string $contentBorderMarker DefaultContent to set.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     */
+    protected function setContentBorderMarker($contentBorderMarker)
+    {
+        $this->contentBorderMarker = $contentBorderMarker;
+    }
+
+    /**
+     * Fluent: Setter for contentBorderMarker.
+     *
+     * @param string $contentBorderMarker DefaultContent to set.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @return $this Instance for chaining
+     */
+    protected function contentBorderMarker($contentBorderMarker)
+    {
+        $this->setContentBorderMarker($contentBorderMarker);
+
+        return $this;
+    }
+
+    /**
+     * Getter for contentBorderMarker.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @return string The contentBorderMarker
+     */
+    protected function getContentBorderMarker()
+    {
+        return $this->contentBorderMarker;
     }
 
     /**
@@ -540,10 +590,10 @@ trait SyntaxAwareTrait
             }
 
             try {
-                $sourceCode = str_replace(
-                    sprintf('"%s"', $directives[0][$i]),
-                    $this->execute($directive, $argument),
-                    $sourceCode
+                $sourceCode = $this->valueResolverPreProcess(
+                    $sourceCode,
+                    $directives[0][$i],
+                    $this->execute($directive, $argument)
                 );
 
             } catch (\Exception $exception) {
@@ -570,7 +620,7 @@ trait SyntaxAwareTrait
      * @return string Post processed source code.
      *
      * @throws SyntaxException
-     * @throws PreprocessorException
+     * @throws PostprocessorException
      */
     protected function postProcess($sourceCode)
     {
@@ -582,29 +632,15 @@ trait SyntaxAwareTrait
             $function = $functions[1][$i];
             $argument = $functions[2][$i];
 
-            if (true !== $this->hasFunction($function)) {
-                throw new SyntaxException(
-                    sprintf('Syntax error. Function "%s" is invalid and could not be processed.', $function)
-                );
-            }
-
             try {
-                $result = $this->execute($function, $argument);
-
-                if (true === is_string($result)) {
-                    $marker = '%s';
-                } else {
-                    $marker = '"%s"';
-                    $result = json_encode($result);
-                }
-
-                $sourceCode = str_replace(
-                    sprintf($marker, $functions[0][$i]),
-                    $result,
-                    $sourceCode
+                $sourceCode = $this->valueResolverPostProcess(
+                    $sourceCode,
+                    $functions[0][$i],
+                    $this->execute($function, $argument)
                 );
+
             } catch (\Exception $exception) {
-                throw new PreprocessorException(
+                throw new PostprocessorException(
                     sprintf('Error processing function "%s".', $syntax),
                     null,
                     $exception
@@ -613,6 +649,51 @@ trait SyntaxAwareTrait
         }
 
         return $sourceCode;
+    }
+
+
+    protected function valueResolverPreProcess($sourceCode, $placeholder, $value)
+    {
+        // Construct marker for replace
+        $marker = sprintf(
+            '%s%s%s',
+            $this->getContentBorderMarker(),
+            $placeholder,
+            $this->getContentBorderMarker()
+        );
+
+        return str_replace(
+            $marker,
+            $value,
+            $sourceCode
+        );
+    }
+
+    protected function valueResolverPostProcess($sourceCode, $placeholder, $value)
+    {
+        // Construct marker for replace
+        $marker = sprintf(
+            '%s%s%s',
+            $this->getContentBorderMarker(),
+            $placeholder,
+            $this->getContentBorderMarker()
+        );
+
+        return str_replace(
+            $marker,
+            $value,
+            $sourceCode
+        );
+
+        /*
+        // JSON thingy ?!
+        if (true === is_string($result)) {
+            $marker = '%s';
+        } else {
+            $marker = '"%s"';
+            $result = json_encode($result);
+        }
+        */
     }
 
     /**
@@ -627,6 +708,7 @@ trait SyntaxAwareTrait
      *
      * @throws RequireFailedException
      * @throws IncludeFailedException
+     * @throws ExecutionFailedException
      */
     protected function execute($directive, $argument)
     {
@@ -700,7 +782,6 @@ trait SyntaxAwareTrait
      * @return string Result of operation
      *
      * @throws ExecutionFailedException
-     * @throws ExecutionResultException
      */
     protected function __php($code)
     {
@@ -715,18 +796,7 @@ trait SyntaxAwareTrait
         }
 
         // Execute closure and receive result (must be string or \stdClass)
-        $result = $code();
-
-        if (false === is_string($result) && false === $result instanceof \stdClass) {
-            throw new ExecutionResultException(
-                sprintf(
-                    'Executed PHP code must return a string or value \stdClass but returned "%s" instead.',
-                    gettype($result)
-                )
-            );
-        }
-
-        return $result;
+        return $code();
     }
 
     /**
@@ -743,19 +813,19 @@ trait SyntaxAwareTrait
     protected function __include($identifier)
     {
         $resource = realpath($this->getBasePath().$identifier);
-        $content  = $this->getDefaultContent();
+        $content  = $this->getContentDefault();
 
         if (false !== $resource) {
             try {
                 $sourceCode = $this->readResource($resource);
-                $content    = $this->preProcess($sourceCode);
+                $content    = $this->compile($sourceCode);
 
             } catch (FileNotFoundException $exception) {
                 // Intentionally left empty.
 
             } catch (\Exception $exception) {
                 throw new IncludeFailedException(
-                    'Error processing include "%s".',
+                    sprintf('Error processing include "%s".', $resource),
                     null,
                     $exception
                 );
@@ -782,11 +852,11 @@ trait SyntaxAwareTrait
 
         try {
             $sourceCode = $this->readResource($resource);
-            $content    = $this->preProcess($sourceCode);
+            $content    = $this->compile($sourceCode);
 
         } catch (\Exception $exception) {
             throw new RequireFailedException(
-                'Error requiring resource "%s".',
+                sprintf('Error requiring resource "%s".', $identifier),
                 null,
                 $exception
             );
@@ -810,7 +880,7 @@ trait SyntaxAwareTrait
     {
         if (true !== file_exists($resource)) {
             throw new FileNotFoundException(
-                'File "%s" can not be found.'
+                sprintf('File "%s" can not be found.', $resource)
             );
         }
 

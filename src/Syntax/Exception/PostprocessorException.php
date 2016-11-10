@@ -3,10 +3,9 @@
 namespace Doozer\Syntax\Exception;
 
 /**
- * Doozer - Syntax - Exception - ExecutionResultException.
+ * Doozer - Syntax - Exception - PostprocessorException.
  *
- * ExecutionResultException.php - Thrown if returned type of an executed expression is neither string nor object
- * (\stdClass).
+ * PostprocessorException.php - Thrown if preprocessor is not able to pre process an expression.
  *
  * PHP versions 5.6
  *
@@ -46,12 +45,12 @@ namespace Doozer\Syntax\Exception;
 use Doozer\Exception\AbstractRuntimeException;
 
 /**
- * ExecutionResultException
- * Thrown if returned type of an executed expression is neither string nor object (\stdClass).
+ * PostprocessorException
+ * Thrown if preprocessor is not able to pre process an expression.
  *
  * @author Benjamin Carl <opensource@clickalicious.de>
  */
-class ExecutionResultException extends AbstractRuntimeException
+class PostprocessorException extends AbstractRuntimeException
 {
     // Intentionally left empty.
 }
