@@ -168,12 +168,12 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
      * Tests: Compiling a passed buffer with failure due to a missing required file.
      *
      * @expectedException \Doozer\Syntax\Exception\CompilerException
-     * @expectedExceptionMessage Error processing directive "{{include(passing-missing-required-file.txt)}}".
+     * @expectedExceptionMessageRegExp /Error processing directive "{{include\(compile-failure-missing-required-file\.(txt|json)\)}}"\./
      */
     public function testCompileBufferWithFailureDuePassingMissingRequiredFile()
     {
-        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
-        $includeFile          = 'passing-missing-required-file';
+        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.'Txt'.DIRECTORY_SEPARATOR;
+        $includeFile          = 'compile-failure-missing-required-file';
         $includeFileExtension = '.txt';
 
         static::$buffer = sprintf('{{include(%s)}}', $includeFile.$includeFileExtension);
@@ -187,12 +187,12 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
      * @author Benjamin Carl <opensource@clickalicious.de>
      *
      * @expectedException \Doozer\Syntax\Exception\CompilerException
-     * @expectedExceptionMessage Error processing directive "{{include(passing-invalid-directive.txt)}}".
+     * @expectedExceptionMessageRegExp /Error processing directive "{{include\(compile-failure-invalid-directive\.(txt|json)\)}}"\./
      */
     public function testCompileFailurePassingInvalidDirective()
     {
-        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
-        $includeFile          = 'passing-invalid-directive';
+        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.'Txt'.DIRECTORY_SEPARATOR;
+        $includeFile          = 'compile-failure-invalid-directive';
         $includeFileExtension = '.txt';
 
         static::$buffer = sprintf('{{include(%s)}}', $includeFile.$includeFileExtension);
@@ -206,12 +206,12 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
      * @author Benjamin Carl <opensource@clickalicious.de>
      *
      * @expectedException \Doozer\Syntax\Exception\CompilerException
-     * @expectedExceptionMessage Error processing directive "{{include(passing-invalid-php-code.txt)}}".
+     * @expectedExceptionMessageRegExp /Error processing directive "{{include\(compile-failure-invalid-php-code\.(txt|json)\)}}"\./
      */
     public function testCompileFailurePassingInvalidPhpCode()
     {
-        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
-        $includeFile          = 'passing-invalid-php-code';
+        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.'Txt'.DIRECTORY_SEPARATOR;
+        $includeFile          = 'compile-failure-invalid-php-code';
         $includeFileExtension = '.txt';
 
         static::$buffer = sprintf('{{include(%s)}}', $includeFile.$includeFileExtension);
@@ -225,12 +225,12 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
      * @author Benjamin Carl <opensource@clickalicious.de>
      *
      * @expectedException \Doozer\Syntax\Exception\CompilerException
-     * @expectedExceptionMessage Error processing directive "{{include(passing-missing-replacement.txt)}}".
+     * @expectedExceptionMessageRegExp /Error processing directive "{{include\(compile-failure-missing-replacement\.(txt|json)\)}}"\./
      */
     public function testCompileFailurePassingMissingReplacement()
     {
-        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
-        $includeFile          = 'passing-missing-replacement';
+        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.'Txt'.DIRECTORY_SEPARATOR;
+        $includeFile          = 'compile-failure-missing-replacement';
         $includeFileExtension = '.txt';
 
         static::$buffer = sprintf('{{include(%s)}}', $includeFile.$includeFileExtension);
