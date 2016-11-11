@@ -168,17 +168,52 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
      * Tests: Compiling a passed buffer with failure due to a missing required file.
      *
      * @expectedException \Doozer\Syntax\Exception\CompilerException
-     * @expectedExceptionMessageRegExp /Error processing directive "{{include\(compile-failure-missing-required-file\.(txt|json)\)}}"\./
+     * @expectedExceptionMessageRegExp /Error processing directive "{{require\(compile-failure-missing-required-file\.(txt|json)\)}}"\./
      */
-    public function testCompileBufferWithFailureDuePassingMissingRequiredFile()
+    public function testCompileBufferWithFailureDuePassingMissingRequiredFileTxt()
     {
-        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.'Txt'.DIRECTORY_SEPARATOR;
-        $includeFile          = 'compile-failure-missing-required-file';
-        $includeFileExtension = '.txt';
+        $testMatrix = [
+            [
+                'mode'           => 'Txt',
+                'borderMarker'   => '',
+                'includeFile'    => 'compile-failure-missing-required-file',
+            ],
+        ];
 
-        static::$buffer = sprintf('{{include(%s)}}', $includeFile.$includeFileExtension);
-        static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
-        static::$fixtureInstance->getCompiledResult(static::$buffer);
+        foreach ($testMatrix as $testSetup) {
+            $includeFileExtension = '.'.strtolower($testSetup['mode']);
+            $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.$testSetup['mode'].DIRECTORY_SEPARATOR;
+            $buffer               = sprintf('%s{{require(%s)}}%s', $testSetup['borderMarker'], $testSetup['includeFile'].$includeFileExtension, $testSetup['borderMarker']);
+
+            $fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet, $testSetup['borderMarker']);
+            $fixtureInstance->getCompiledResult($buffer);
+        }
+    }
+
+    /**
+     * Tests: Compiling a passed buffer with failure due to a missing required file.
+     *
+     * @expectedException \Doozer\Syntax\Exception\CompilerException
+     * @expectedExceptionMessageRegExp /Error processing directive "{{require\(compile-failure-missing-required-file\.(txt|json)\)}}"\./
+     */
+    public function testCompileBufferWithFailureDuePassingMissingRequiredFileJson()
+    {
+        $testMatrix = [
+            [
+                'mode'           => 'Json',
+                'borderMarker'   => '"',
+                'includeFile'    => 'compile-failure-missing-required-file',
+            ],
+        ];
+
+        foreach ($testMatrix as $testSetup) {
+            $includeFileExtension = '.'.strtolower($testSetup['mode']);
+            $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.$testSetup['mode'].DIRECTORY_SEPARATOR;
+            $buffer               = sprintf('%s{{require(%s)}}%s', $testSetup['borderMarker'], $testSetup['includeFile'].$includeFileExtension, $testSetup['borderMarker']);
+
+            $fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet, $testSetup['borderMarker']);
+            $fixtureInstance->getCompiledResult($buffer);
+        }
     }
 
     /**
@@ -187,17 +222,54 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
      * @author Benjamin Carl <opensource@clickalicious.de>
      *
      * @expectedException \Doozer\Syntax\Exception\CompilerException
-     * @expectedExceptionMessageRegExp /Error processing directive "{{include\(compile-failure-invalid-directive\.(txt|json)\)}}"\./
+     * @expectedExceptionMessageRegExp /Error processing directive "{{require\(compile-failure-invalid-directive\.(txt|json)\)}}"\./
      */
-    public function testCompileFailurePassingInvalidDirective()
+    public function testCompileFailurePassingInvalidDirectiveTxt()
     {
-        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.'Txt'.DIRECTORY_SEPARATOR;
-        $includeFile          = 'compile-failure-invalid-directive';
-        $includeFileExtension = '.txt';
+        $testMatrix = [
+            [
+                'mode'           => 'Txt',
+                'borderMarker'   => '',
+                'includeFile'    => 'compile-failure-invalid-directive',
+            ],
+        ];
 
-        static::$buffer = sprintf('{{include(%s)}}', $includeFile.$includeFileExtension);
-        static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
-        static::$fixtureInstance->getCompiledResult(static::$buffer);
+        foreach ($testMatrix as $testSetup) {
+            $includeFileExtension = '.'.strtolower($testSetup['mode']);
+            $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.$testSetup['mode'].DIRECTORY_SEPARATOR;
+            $buffer               = sprintf('%s{{require(%s)}}%s', $testSetup['borderMarker'], $testSetup['includeFile'].$includeFileExtension, $testSetup['borderMarker']);
+
+            $fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet, $testSetup['borderMarker']);
+            $fixtureInstance->getCompiledResult($buffer);
+        }
+    }
+
+    /**
+     * Tests: Compiling a passed buffer with failure due to passing an invalid directive.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @expectedException \Doozer\Syntax\Exception\CompilerException
+     * @expectedExceptionMessageRegExp /Error processing directive "{{require\(compile-failure-invalid-directive\.(txt|json)\)}}"\./
+     */
+    public function testCompileFailurePassingInvalidDirectiveJson()
+    {
+        $testMatrix = [
+            [
+                'mode'           => 'Json',
+                'borderMarker'   => '',
+                'includeFile'    => 'compile-failure-invalid-directive',
+            ],
+        ];
+
+        foreach ($testMatrix as $testSetup) {
+            $includeFileExtension = '.'.strtolower($testSetup['mode']);
+            $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.$testSetup['mode'].DIRECTORY_SEPARATOR;
+            $buffer               = sprintf('%s{{require(%s)}}%s', $testSetup['borderMarker'], $testSetup['includeFile'].$includeFileExtension, $testSetup['borderMarker']);
+
+            $fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet, $testSetup['borderMarker']);
+            $fixtureInstance->getCompiledResult($buffer);
+        }
     }
 
     /**
@@ -206,17 +278,54 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
      * @author Benjamin Carl <opensource@clickalicious.de>
      *
      * @expectedException \Doozer\Syntax\Exception\CompilerException
-     * @expectedExceptionMessageRegExp /Error processing directive "{{include\(compile-failure-invalid-php-code\.(txt|json)\)}}"\./
+     * @expectedExceptionMessageRegExp /Error processing directive "{{require\(compile-failure-invalid-php-code\.(txt|json)\)}}"\./
      */
-    public function testCompileFailurePassingInvalidPhpCode()
+    public function testCompileFailurePassingInvalidPhpCodeTxt()
     {
-        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.'Txt'.DIRECTORY_SEPARATOR;
-        $includeFile          = 'compile-failure-invalid-php-code';
-        $includeFileExtension = '.txt';
+        $testMatrix = [
+            [
+                'mode'           => 'Txt',
+                'borderMarker'   => '',
+                'includeFile'    => 'compile-failure-invalid-php-code',
+            ],
+        ];
 
-        static::$buffer = sprintf('{{include(%s)}}', $includeFile.$includeFileExtension);
-        static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
-        static::$fixtureInstance->getCompiledResult(static::$buffer);
+        foreach ($testMatrix as $testSetup) {
+            $includeFileExtension = '.'.strtolower($testSetup['mode']);
+            $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.$testSetup['mode'].DIRECTORY_SEPARATOR;
+            $buffer               = sprintf('%s{{require(%s)}}%s', $testSetup['borderMarker'], $testSetup['includeFile'].$includeFileExtension, $testSetup['borderMarker']);
+
+            $fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet, $testSetup['borderMarker']);
+            $fixtureInstance->getCompiledResult($buffer);
+        }
+    }
+
+    /**
+     * Tests: Compiling a passed buffer with failure due to an invalid piece of PHP code.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @expectedException \Doozer\Syntax\Exception\CompilerException
+     * @expectedExceptionMessageRegExp /Error processing directive "{{require\(compile-failure-invalid-php-code\.(txt|json)\)}}"\./
+     */
+    public function testCompileFailurePassingInvalidPhpCodeJson()
+    {
+        $testMatrix = [
+            [
+                'mode'           => 'Json',
+                'borderMarker'   => '',
+                'includeFile'    => 'compile-failure-invalid-php-code',
+            ],
+        ];
+
+        foreach ($testMatrix as $testSetup) {
+            $includeFileExtension = '.'.strtolower($testSetup['mode']);
+            $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.$testSetup['mode'].DIRECTORY_SEPARATOR;
+            $buffer               = sprintf('%s{{require(%s)}}%s', $testSetup['borderMarker'], $testSetup['includeFile'].$includeFileExtension, $testSetup['borderMarker']);
+
+            $fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet, $testSetup['borderMarker']);
+            $fixtureInstance->getCompiledResult($buffer);
+        }
     }
 
     /**
@@ -225,16 +334,53 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
      * @author Benjamin Carl <opensource@clickalicious.de>
      *
      * @expectedException \Doozer\Syntax\Exception\CompilerException
-     * @expectedExceptionMessageRegExp /Error processing directive "{{include\(compile-failure-missing-replacement\.(txt|json)\)}}"\./
+     * @expectedExceptionMessageRegExp /Error processing directive "{{require\(compile-failure-missing-replacement\.(txt|json)\)}}"\./
      */
-    public function testCompileFailurePassingMissingReplacement()
+    public function testCompileFailurePassingMissingReplacementTxt()
     {
-        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.'Txt'.DIRECTORY_SEPARATOR;
-        $includeFile          = 'compile-failure-missing-replacement';
-        $includeFileExtension = '.txt';
+        $testMatrix = [
+            [
+                'mode'           => 'Txt',
+                'borderMarker'   => '',
+                'includeFile'    => 'compile-failure-missing-replacement',
+            ],
+        ];
 
-        static::$buffer = sprintf('{{include(%s)}}', $includeFile.$includeFileExtension);
-        static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
-        static::$fixtureInstance->getCompiledResult(static::$buffer);
+        foreach ($testMatrix as $testSetup) {
+            $includeFileExtension = '.'.strtolower($testSetup['mode']);
+            $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.$testSetup['mode'].DIRECTORY_SEPARATOR;
+            $buffer               = sprintf('%s{{require(%s)}}%s', $testSetup['borderMarker'], $testSetup['includeFile'].$includeFileExtension, $testSetup['borderMarker']);
+
+            $fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet, $testSetup['borderMarker']);
+            $fixtureInstance->getCompiledResult($buffer);
+        }
+    }
+
+    /**
+     * Tests: Compiling a passed buffer with failure due to a missing replacement variable.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @expectedException \Doozer\Syntax\Exception\CompilerException
+     * @expectedExceptionMessageRegExp /Error processing directive "{{require\(compile-failure-missing-replacement\.(txt|json)\)}}"\./
+     */
+    public function testCompileFailurePassingMissingReplacementJson()
+    {
+        $testMatrix = [
+            [
+                'mode'           => 'Json',
+                'borderMarker'   => '',
+                'includeFile'    => 'compile-failure-missing-replacement',
+            ],
+        ];
+
+        foreach ($testMatrix as $testSetup) {
+            $includeFileExtension = '.'.strtolower($testSetup['mode']);
+            $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR.$testSetup['mode'].DIRECTORY_SEPARATOR;
+            $buffer               = sprintf('%s{{require(%s)}}%s', $testSetup['borderMarker'], $testSetup['includeFile'].$includeFileExtension, $testSetup['borderMarker']);
+
+            $fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet, $testSetup['borderMarker']);
+            $fixtureInstance->getCompiledResult($buffer);
+        }
     }
 }
