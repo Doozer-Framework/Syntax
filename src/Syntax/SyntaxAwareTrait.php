@@ -46,8 +46,8 @@ use Doozer\Syntax\Exception\CompilerException;
 use Doozer\Syntax\Exception\ExecutionFailedException;
 use Doozer\Syntax\Exception\FileNotFoundException;
 use Doozer\Syntax\Exception\IncludeFailedException;
-use Doozer\Syntax\Exception\PostprocessorException;
-use Doozer\Syntax\Exception\PreprocessorException;
+use Doozer\Syntax\Exception\PostProcessorException;
+use Doozer\Syntax\Exception\PreProcessorException;
 use Doozer\Syntax\Exception\RequireFailedException;
 use Doozer\Syntax\Exception\ResolvePlaceholderException;
 use Doozer\Syntax\Exception\SyntaxException;
@@ -550,7 +550,7 @@ trait SyntaxAwareTrait
 
         } catch (\Exception $exception) {
             throw new CompilerException(
-                'Compile failed for some reason.',
+                $exception->getMessage(),
                 null,
                 $exception
             );
@@ -571,7 +571,7 @@ trait SyntaxAwareTrait
      * @return string Processed result
      *
      * @throws SyntaxException
-     * @throws PreprocessorException
+     * @throws PreProcessorException
      */
     protected function preProcess($sourceCode)
     {
@@ -597,7 +597,7 @@ trait SyntaxAwareTrait
                 );
 
             } catch (\Exception $exception) {
-                throw new PreprocessorException(
+                throw new PreProcessorException(
                     sprintf('Error processing directive "%s".', $syntax),
                     null,
                     $exception
@@ -620,7 +620,7 @@ trait SyntaxAwareTrait
      * @return string Post processed source code.
      *
      * @throws SyntaxException
-     * @throws PostprocessorException
+     * @throws PostProcessorException
      */
     protected function postProcess($sourceCode)
     {
@@ -640,7 +640,7 @@ trait SyntaxAwareTrait
                 );
 
             } catch (\Exception $exception) {
-                throw new PostprocessorException(
+                throw new PostProcessorException(
                     sprintf('Error processing function "%s".', $syntax),
                     null,
                     $exception

@@ -3,9 +3,9 @@
 namespace Doozer\Syntax\Exception;
 
 /**
- * Doozer - Syntax - Exception - PreprocessorException.
+ * Doozer - Syntax - Exception - PreProcessorException.
  *
- * PreprocessorException.php - Thrown if preprocessor is not able to pre process an expression.
+ * PreProcessorException.php - Thrown if preprocessor is not able to pre process an expression.
  *
  * PHP versions 5.6
  *
@@ -45,12 +45,12 @@ namespace Doozer\Syntax\Exception;
 use Doozer\Exception\AbstractRuntimeException;
 
 /**
- * PreprocessorException
+ * PreProcessorException
  * Thrown if preprocessor is not able to pre process an expression.
  *
  * @author Benjamin Carl <opensource@clickalicious.de>
  */
-class PreprocessorException extends AbstractRuntimeException
+class PreProcessorException extends AbstractRuntimeException
 {
     // Intentionally left empty.
 }

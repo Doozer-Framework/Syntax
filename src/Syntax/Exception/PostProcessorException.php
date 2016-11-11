@@ -1,11 +1,11 @@
 <?php
 
-namespace Doozer\Syntax\Tests\Fixtures;
+namespace Doozer\Syntax\Exception;
 
 /**
- * Doozer - Syntax - Tests - Fixtures - Foo.
+ * Doozer - Syntax - Exception - PostProcessorException.
  *
- * Foo.php - Fixture implementing trait for Unit-Tests.
+ * PostProcessorException.php - Thrown if preprocessor is not able to pre process an expression.
  *
  * PHP versions 5.6
  *
@@ -32,7 +32,7 @@ namespace Doozer\Syntax\Tests\Fixtures;
  *
  * Please feel free to contact us via e-mail: opensource@clickalicious.de
  *
- * @category  Doozer-Framework
+ * @category  Doozer
  *
  * @author    Benjamin Carl <opensource@clickalicious.de>
  * @copyright 2005 - 2016 Benjamin Carl
@@ -42,43 +42,15 @@ namespace Doozer\Syntax\Tests\Fixtures;
  *
  * @link      https://github.com/Doozer-Framework/Syntax
  */
-use Doozer\Syntax\SyntaxAwareTrait;
+use Doozer\Exception\AbstractRuntimeException;
 
 /**
- * Foo
- * @author  Benjamin Carl <opensource@clickalicious.de>
+ * PostProcessorException
+ * Thrown if preprocessor is not able to pre process an expression.
+ *
+ * @author Benjamin Carl <opensource@clickalicious.de>
  */
-class Foo
+class PostProcessorException extends AbstractRuntimeException
 {
-    // The trait we test
-    use SyntaxAwareTrait;
-
-    /**
-     * Constructor.
-     *
-     * @param string $basePath  Base path used for relative includes and requires.
-     * @param array  $variables Variables being used for replacements.
-     * @param array  $constants Constants being used for replacements.
-     */
-    public function __construct($basePath, array $variables = [], array $constants = [])
-    {
-        $this
-            ->basePath($basePath)
-            ->variables($variables)
-            ->constants($constants);
-    }
-
-    /**
-     * Accessor with public visibility for result check in unit tests.
-     *
-     * @param string $sourceCode The source code to compile.
-     *
-     * @author Benjamin Carl <opensource@clickalicious.de>
-     *
-     * @return string Result of compiler run
-     */
-    public function getCompiledResult($sourceCode)
-    {
-        return $this->compile($sourceCode);
-    }
+    // Intentionally left empty.
 }

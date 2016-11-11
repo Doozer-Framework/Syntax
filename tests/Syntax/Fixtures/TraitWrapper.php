@@ -1,11 +1,11 @@
 <?php
 
-namespace Doozer\Syntax\Exception;
+namespace Doozer\Syntax\Tests\Fixtures;
 
 /**
- * Doozer - Syntax - Exception - PostprocessorException.
+ * Doozer - Syntax - Tests - Fixtures - TraitWrapper.
  *
- * PostprocessorException.php - Thrown if preprocessor is not able to pre process an expression.
+ * TraitWrapper.php - Wrapper implementing trait for Unit-Tests.
  *
  * PHP versions 5.6
  *
@@ -32,7 +32,7 @@ namespace Doozer\Syntax\Exception;
  *
  * Please feel free to contact us via e-mail: opensource@clickalicious.de
  *
- * @category  Doozer
+ * @category  Doozer-Framework
  *
  * @author    Benjamin Carl <opensource@clickalicious.de>
  * @copyright 2005 - 2016 Benjamin Carl
@@ -42,15 +42,45 @@ namespace Doozer\Syntax\Exception;
  *
  * @link      https://github.com/Doozer-Framework/Syntax
  */
-use Doozer\Exception\AbstractRuntimeException;
+use Doozer\Syntax\SyntaxAwareTrait;
 
 /**
- * PostprocessorException
- * Thrown if preprocessor is not able to pre process an expression.
- *
+ * TraitWrapper
  * @author Benjamin Carl <opensource@clickalicious.de>
  */
-class PostprocessorException extends AbstractRuntimeException
+class TraitWrapper
 {
-    // Intentionally left empty.
+    // Define trait we are going to test here ...
+    use SyntaxAwareTrait;
+
+    /**
+     * Constructor.
+     *
+     * @param string $basePath  Base path used for relative includes and requires.
+     * @param array  $variables Variables being used for replacements.
+     * @param array  $constants Constants being used for replacements.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     */
+    public function __construct($basePath, array $variables = [], array $constants = [])
+    {
+        $this
+            ->basePath($basePath)
+            ->variables($variables)
+            ->constants($constants);
+    }
+
+    /**
+     * Accessor with public visibility for result check in unit tests.
+     *
+     * @param string $sourceCode The source code to compile.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     *
+     * @return string Result of compiler run
+     */
+    public function getCompiledResult($sourceCode)
+    {
+        return $this->compile($sourceCode);
+    }
 }

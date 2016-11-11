@@ -42,7 +42,7 @@ namespace Doozer\Syntax\Tests;
  *
  * @link      https://github.com/Doozer-Framework/Syntax
  */
-use Doozer\Syntax\Tests\Fixtures\Foo;
+use Doozer\Syntax\Tests\Fixtures\TraitWrapper;
 
 /**
  * SyntaxAwareTraitTest
@@ -54,7 +54,7 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
     /**
      * Test subject implementing Syntax trait.
      *
-     * @var \Doozer\Syntax\Tests\Fixtures\Foo
+     * @var \Doozer\Syntax\Tests\Fixtures\TraitWrapper
      */
     protected static $fixtureInstance;
 
@@ -80,6 +80,7 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
     protected static $buffer;
 
     /**
+     * Result expected on test run.
      *
      * @var string
      */
@@ -114,20 +115,33 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
         static::$buffer          = null;
     }
 
-    public function testInstance()
+    /**
+     * Tests: Creating an instance of fixture/wrapper.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     */
+    public function testCreateInstanceOfWrapperContainingSyntaxTrait()
     {
         $basePath = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Success'.DIRECTORY_SEPARATOR;
-        static::$fixtureInstance = new Foo($basePath, static::$variableSet, static::$constantSet);
-        static::assertInstanceOf('\Doozer\Syntax\Tests\Fixtures\Foo', static::$fixtureInstance);
+
+        static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
+
+        static::assertInstanceOf('\Doozer\Syntax\Tests\Fixtures\TraitWrapper', static::$fixtureInstance);
     }
 
-    public function testCompileSuccessful()
+    /**
+     * Tests: Compiling a passed buffer with success.
+     *
+     * @author Benjamin Carl <opensource@clickalicious.de>
+     */
+    public function testCompileBufferWithSuccess()
     {
         $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Success'.DIRECTORY_SEPARATOR;
         $includeFile = 'foo.txt';
+
         static::$buffer = sprintf('{{require(%s)}}', $includeFile);
         static::$expectedResult = "ALOHA\nBAR\n456\nbar\n123\nBAZ\nbaz";
-        static::$fixtureInstance = new Foo($basePath, static::$variableSet, static::$constantSet);
+        static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
 
         static::assertSame(
             static::$fixtureInstance->getCompiledResult(static::$buffer),
@@ -136,65 +150,72 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * testCompileFailurePassingMissingRequiredFile.
+     * Tests: Compiling a passed buffer with failure due to a missing required file.
      *
      * @expectedException \Doozer\Syntax\Exception\CompilerException
+     * @expectedExceptionMessage Error processing directive "{{include(passing-missing-required-file.txt)}}".
      */
-    public function testCompileFailurePassingMissingRequiredFile()
+    public function testCompileBufferWithFailureDuePassingMissingRequiredFile()
     {
         $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
         $includeFile = 'passing-missing-required-file.txt';
+
         static::$buffer = sprintf('{{include(%s)}}', $includeFile);
-        static::$fixtureInstance = new Foo($basePath, static::$variableSet, static::$constantSet);
+        static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
         static::$fixtureInstance->getCompiledResult(static::$buffer);
     }
 
     /**
-     * testCompileFailurePassingInvalidDirective.
+     * Tests: Compiling a passed buffer with failure due to passing an invalid directive.
      *
      * @author Benjamin Carl <opensource@clickalicious.de>
      *
      * @expectedException \Doozer\Syntax\Exception\CompilerException
+     * @expectedExceptionMessage Error processing directive "{{include(passing-invalid-directive.txt)}}".
      */
     public function testCompileFailurePassingInvalidDirective()
     {
         $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
         $includeFile = 'passing-invalid-directive.txt';
+
         static::$buffer = sprintf('{{include(%s)}}', $includeFile);
-        static::$fixtureInstance = new Foo($basePath, static::$variableSet, static::$constantSet);
+        static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
         static::$fixtureInstance->getCompiledResult(static::$buffer);
     }
 
-
     /**
-     * testCompileFailurePassingInvalidPhpCode.
+     * Tests: Compiling a passed buffer with failure due to an invalid piece of PHP code.
      *
      * @author Benjamin Carl <opensource@clickalicious.de>
      *
      * @expectedException \Doozer\Syntax\Exception\CompilerException
+     * @expectedExceptionMessage Error processing directive "{{include(passing-invalid-php-code.txt)}}".
      */
     public function testCompileFailurePassingInvalidPhpCode()
     {
         $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
         $includeFile = 'passing-invalid-php-code.txt';
+
         static::$buffer = sprintf('{{include(%s)}}', $includeFile);
-        static::$fixtureInstance = new Foo($basePath, static::$variableSet, static::$constantSet);
+        static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
         static::$fixtureInstance->getCompiledResult(static::$buffer);
     }
 
     /**
-     * testCompileFailurePassingMissingReplacement.
+     * Tests: Compiling a passed buffer with failure due to a missing replacement variable.
      *
      * @author Benjamin Carl <opensource@clickalicious.de>
      *
      * @expectedException \Doozer\Syntax\Exception\CompilerException
+     * @expectedExceptionMessage Error processing directive "{{include(passing-missing-replacement.txt)}}".
      */
     public function testCompileFailurePassingMissingReplacement()
     {
         $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
         $includeFile = 'passing-missing-replacement.txt';
+
         static::$buffer = sprintf('{{include(%s)}}', $includeFile);
-        static::$fixtureInstance = new Foo($basePath, static::$variableSet, static::$constantSet);
+        static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
         static::$fixtureInstance->getCompiledResult(static::$buffer);
     }
 }
