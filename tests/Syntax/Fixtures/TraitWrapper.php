@@ -56,18 +56,20 @@ class TraitWrapper
     /**
      * Constructor.
      *
-     * @param string $basePath  Base path used for relative includes and requires.
-     * @param array  $variables Variables being used for replacements.
-     * @param array  $constants Constants being used for replacements.
+     * @param string $basePath            Base path used for relative includes and requires.
+     * @param array  $variables           Variables being used for replacements.
+     * @param array  $constants           Constants being used for replacements.
+     * @param string $contentBorderMarker Required e.g. for replacing JSON structures effectively.
      *
      * @author Benjamin Carl <opensource@clickalicious.de>
      */
-    public function __construct($basePath, array $variables = [], array $constants = [])
+    public function __construct($basePath, array $variables = [], array $constants = [], $contentBorderMarker = '')
     {
         $this
             ->basePath($basePath)
             ->variables($variables)
-            ->constants($constants);
+            ->constants($constants)
+            ->contentBorderMarker($contentBorderMarker);
     }
 
     /**

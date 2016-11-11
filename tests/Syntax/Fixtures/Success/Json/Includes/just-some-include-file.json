@@ -1,0 +1,7 @@
+{
+      "ALOHA": "{{php(function(){return '123';};)}}",
+      "FOO": "{{FOO}}",
+      "BAZ": "{{BAZ}}",
+      "foo": "{{foo}}",
+      "baz": "{{baz}}"
+    }

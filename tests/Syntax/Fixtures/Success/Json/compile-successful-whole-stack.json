@@ -1,0 +1,5 @@
+{
+  "foo": {
+    "bar": "{{include(Includes/just-some-include-file.json)}}"
+  }
+}

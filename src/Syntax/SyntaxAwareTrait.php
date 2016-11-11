@@ -590,7 +590,7 @@ trait SyntaxAwareTrait
             }
 
             try {
-                $sourceCode = $this->valueResolverPreProcess(
+                $sourceCode = $this->preProcessValueResolver(
                     $sourceCode,
                     $directives[0][$i],
                     $this->execute($directive, $argument)
@@ -633,7 +633,7 @@ trait SyntaxAwareTrait
             $argument = $functions[2][$i];
 
             try {
-                $sourceCode = $this->valueResolverPostProcess(
+                $sourceCode = $this->postProcessValueResolver(
                     $sourceCode,
                     $functions[0][$i],
                     $this->execute($function, $argument)
@@ -652,7 +652,7 @@ trait SyntaxAwareTrait
     }
 
 
-    protected function valueResolverPreProcess($sourceCode, $placeholder, $value)
+    protected function preProcessValueResolver($sourceCode, $placeholder, $value)
     {
         // Construct marker for replace
         $marker = sprintf(
@@ -669,7 +669,7 @@ trait SyntaxAwareTrait
         );
     }
 
-    protected function valueResolverPostProcess($sourceCode, $placeholder, $value)
+    protected function postProcessValueResolver($sourceCode, $placeholder, $value)
     {
         // Construct marker for replace
         $marker = sprintf(

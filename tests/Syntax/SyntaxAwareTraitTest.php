@@ -122,7 +122,7 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateInstanceOfWrapperContainingSyntaxTrait()
     {
-        $basePath = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Success'.DIRECTORY_SEPARATOR;
+        $basePath = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Success'.DIRECTORY_SEPARATOR.'Txt'.DIRECTORY_SEPARATOR;
 
         static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
 
@@ -136,17 +136,32 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testCompileBufferWithSuccess()
     {
-        $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Success'.DIRECTORY_SEPARATOR;
-        $includeFile = 'foo.txt';
+        $testMatrix = [
+            [
+                'mode'           => 'Txt',
+                'borderMarker'   => '',
+                'expectedResult' => "ALOHA\nBAR\n456\nbar\n123\nBAZ\nbaz",
+                'includeFile'    => 'compile-successful-whole-stack',
+            ],
+            [
+                'mode'           => 'Json',
+                'borderMarker'   => '"',
+                'expectedResult' => "{\n  \"foo\": {\n    \"bar\": {\n      \"ALOHA\": 123,\n      \"FOO\": \"BAR\",\n      \"BAZ\": \"456\",\n      \"foo\": \"bar\",\n      \"baz\": \"123\"\n    }\n  }\n}",
+                'includeFile'    => 'compile-successful-whole-stack',
+            ],
+        ];
 
-        static::$buffer = sprintf('{{require(%s)}}', $includeFile);
-        static::$expectedResult = "ALOHA\nBAR\n456\nbar\n123\nBAZ\nbaz";
-        static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
+        foreach ($testMatrix as $testSetup) {
+            $includeFileExtension = '.'.strtolower($testSetup['mode']);
+            $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Success'.DIRECTORY_SEPARATOR.$testSetup['mode'].DIRECTORY_SEPARATOR;
+            $buffer               = sprintf('%s{{require(%s)}}%s', $testSetup['borderMarker'], $testSetup['includeFile'].$includeFileExtension, $testSetup['borderMarker']);
+            $fixtureInstance      = new TraitWrapper($basePath, static::$variableSet, static::$constantSet, $testSetup['borderMarker']);
 
-        static::assertSame(
-            static::$fixtureInstance->getCompiledResult(static::$buffer),
-            static::$expectedResult
-        );
+            static::assertSame(
+                $fixtureInstance->getCompiledResult($buffer),
+                $testSetup['expectedResult']
+            );
+        }
     }
 
     /**
@@ -157,10 +172,11 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testCompileBufferWithFailureDuePassingMissingRequiredFile()
     {
-        $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
-        $includeFile = 'passing-missing-required-file.txt';
+        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
+        $includeFile          = 'passing-missing-required-file';
+        $includeFileExtension = '.txt';
 
-        static::$buffer = sprintf('{{include(%s)}}', $includeFile);
+        static::$buffer = sprintf('{{include(%s)}}', $includeFile.$includeFileExtension);
         static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
         static::$fixtureInstance->getCompiledResult(static::$buffer);
     }
@@ -175,10 +191,11 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testCompileFailurePassingInvalidDirective()
     {
-        $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
-        $includeFile = 'passing-invalid-directive.txt';
+        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
+        $includeFile          = 'passing-invalid-directive';
+        $includeFileExtension = '.txt';
 
-        static::$buffer = sprintf('{{include(%s)}}', $includeFile);
+        static::$buffer = sprintf('{{include(%s)}}', $includeFile.$includeFileExtension);
         static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
         static::$fixtureInstance->getCompiledResult(static::$buffer);
     }
@@ -193,10 +210,11 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testCompileFailurePassingInvalidPhpCode()
     {
-        $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
-        $includeFile = 'passing-invalid-php-code.txt';
+        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
+        $includeFile          = 'passing-invalid-php-code';
+        $includeFileExtension = '.txt';
 
-        static::$buffer = sprintf('{{include(%s)}}', $includeFile);
+        static::$buffer = sprintf('{{include(%s)}}', $includeFile.$includeFileExtension);
         static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
         static::$fixtureInstance->getCompiledResult(static::$buffer);
     }
@@ -211,10 +229,11 @@ class SyntaxAwareTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testCompileFailurePassingMissingReplacement()
     {
-        $basePath    = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
-        $includeFile = 'passing-missing-replacement.txt';
+        $basePath             = __DIR__.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR.'Failure'.DIRECTORY_SEPARATOR;
+        $includeFile          = 'passing-missing-replacement';
+        $includeFileExtension = '.txt';
 
-        static::$buffer = sprintf('{{include(%s)}}', $includeFile);
+        static::$buffer = sprintf('{{include(%s)}}', $includeFile.$includeFileExtension);
         static::$fixtureInstance = new TraitWrapper($basePath, static::$variableSet, static::$constantSet);
         static::$fixtureInstance->getCompiledResult(static::$buffer);
     }
