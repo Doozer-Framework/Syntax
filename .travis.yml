@@ -24,7 +24,7 @@ before_script:
   - composer --optimize-autoloader --no-interaction
 
 script:
-  - bin/phpunit -c . --coverage-clover=coverage.clover --coverage-html=./docs/coverage
+  - stty cols 80; bin/phpunit -c . --coverage-clover=coverage.clover --coverage-html=./docs/coverage
 
 after_script:
   # We upload only for reference platform! This is our base for further code analyses and so on.
